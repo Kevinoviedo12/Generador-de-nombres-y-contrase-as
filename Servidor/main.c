@@ -46,13 +46,13 @@ int main() {
     // Inicializar Winsock
     printf("Inicializando Winsock...\n");
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-        printf("Fallo en la inicialización de Winsock. Código de error: %d\n", WSAGetLastError());
+        printf("Fallo en la inicializacion de Winsock. Codigo de error: %d\n", WSAGetLastError());
         return 1;
     }
 
     // Crear socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
-        printf("No se pudo crear el socket. Código de error: %d\n", WSAGetLastError());
+        printf("No se pudo crear el socket. Codigo de error: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
@@ -63,7 +63,7 @@ int main() {
 
     // Asociar el socket al puerto
     if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == SOCKET_ERROR) {
-        printf("Error en bind. Código de error: %d\n", WSAGetLastError());
+        printf("Error en bind. Codigo de error: %d\n", WSAGetLastError());
         closesocket(server_fd);
         WSACleanup();
         return 1;
@@ -71,19 +71,19 @@ int main() {
 
     // Escuchar conexiones
     if (listen(server_fd, 3) == SOCKET_ERROR) {
-        printf("Error en listen. Código de error: %d\n", WSAGetLastError());
+        printf("Error en listen. Codigo de error: %d\n", WSAGetLastError());
         closesocket(server_fd);
         WSACleanup();
         return 1;
     }
 
-    // Inicializar la semilla del generador de números aleatorios
+    // Inicializar el generador de números aleatorios
     srand((unsigned int)time(NULL));
 
     while (1) {
         printf("Esperando conexiones...\n");
         if ((new_socket = accept(server_fd, (struct sockaddr*)&address, &addrlen)) == INVALID_SOCKET) {
-            printf("Error en accept. Código de error: %d\n", WSAGetLastError());
+            printf("Error en accept. Codigo de error: %d\n", WSAGetLastError());
             closesocket(server_fd);
             WSACleanup();
             return 1;
@@ -100,33 +100,33 @@ int main() {
                 int length = atoi(buffer + 1);
                 if (buffer[0] == 'U') {  // Generar nombre de usuario
                     if (length < 5 || length > 15) {
-                        strcpy(response, "Error: Longitud inválida para nombre de usuario.");
+                        strcpy(response, "Error: Longitud incorrecta para nombre de usuario.");
                     } else {
                         generate_username(response, length);
                     }
                 } else if (buffer[0] == 'P') {  // Generar contraseña
                     if (length < 8 || length >= 50) {
-                        strcpy(response, "Error: Longitud inválida para contraseña.");
+                        strcpy(response, "Error: Longitud incorrecta para contrasenia.");
                     } else {
                         generate_password(response, length);
                     }
                 } else {
-                    strcpy(response, "Error: Solicitud no válida.");
+                    strcpy(response, "Error: Solicitud no valida.");
                 }
 
                 // Enviar respuesta al cliente
                 if (send(new_socket, response, strlen(response), 0) == SOCKET_ERROR) {
-                    printf("Error al enviar datos. Código de error: %d\n", WSAGetLastError());
+                    printf("Error al enviar datos. Codigo de error: %d\n", WSAGetLastError());
                 } else {
                     printf("Respuesta enviada: %s\n", response);
                 }
             } else if (recv_len == 0) {
                 // Cliente cerrado la conexión
-                printf("El cliente ha cerrado la conexión.\n");
+                printf("El cliente ha cerrado la conexion.\n");
                 break;
             } else {
                 // Error en la recepción
-                printf("Error al recibir datos. Código de error: %d\n", WSAGetLastError());
+                printf("Error al recibir datos. Codigo de error: %d\n", WSAGetLastError());
                 break;
             }
         }

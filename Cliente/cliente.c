@@ -46,9 +46,9 @@ int main() {
     while (1) {
         printf("Menú:\n");
         printf("1. Generar nombre de usuario\n");
-        printf("2. Generar contraseña\n");
+        printf("2. Generar contrasenia\n");
         printf("3. Salir\n");
-        printf("Elija una opción: ");
+        printf("Elija una opcion: ");
         scanf("%d", &option);
 
         if (option == 3) {
@@ -63,14 +63,14 @@ int main() {
 
                 if (option == 1) {
                     if (length < 5 || length > 15) {
-                        printf("Longitud inválida para nombre de usuario. Debe estar entre 5 y 15.\n");
+                        printf("Longitud incorrecta para nombre de usuario. Tiene que estar entre 5 y 15.\n");
                     } else {
                         snprintf(buffer, MAX_LEN, "U%d", length);
                         break; // Longitud válida, salir del bucle interno
                     }
                 } else if (option == 2) {
                     if (length < 8 || length >= 50) {
-                        printf("Longitud inválida para contraseña. Debe ser al menos 8 y menos de 50.\n");
+                        printf("Longitud incorrecta para contraseña. Tiene que ser al menos 8 y menos de 50.\n");
                     } else {
                         snprintf(buffer, MAX_LEN, "P%d", length);
                         break; // Longitud válida, salir del bucle interno
@@ -80,7 +80,7 @@ int main() {
 
             // Enviar solicitud al servidor
             if (send(sock, buffer, strlen(buffer), 0) == SOCKET_ERROR) {
-                printf("Error al enviar solicitud. Código de error: %d\n", WSAGetLastError());
+                printf("Error al enviar solicitud. Codigo de error: %d\n", WSAGetLastError());
                 break; // Salir del bucle en caso de error de envío
             }
             printf("Solicitud enviada: %s\n", buffer);
@@ -91,14 +91,14 @@ int main() {
                 response[recv_len] = '\0'; // Asegurar el null-terminator
                 printf("Respuesta del servidor: %s\n", response);
             } else if (recv_len == 0) {
-                printf("El servidor ha cerrado la conexión.\n");
+                printf("El servidor ha cerrado la conexion.\n");
                 break; // Salir del bucle si el servidor cierra la conexión
             } else {
-                printf("Error al recibir datos. Código de error: %d\n", WSAGetLastError());
+                printf("Error al recibir datos. Codigo de error: %d\n", WSAGetLastError());
                 break; // Salir en caso de error de recepción
             }
         } else {
-            printf("Opción no válida.\n");
+            printf("Opcion no válida.\n");
         }
     }
 
