@@ -2,7 +2,7 @@ const net = require('net');
 const readline = require('readline');
 
 // Configuración del cliente
-const PORT = 9090;
+const PUERTO = 9090;
 const HOST = '127.0.0.1';
 
 // Crear interfaz para leer la entrada del usuario
@@ -12,74 +12,74 @@ const rl = readline.createInterface({
 });
 
 // Crear el cliente TCP
-const client = new net.Socket();
+const cliente = new net.Socket();
 
 // Conectar al servidor
-client.connect(PORT, HOST, () => {
+cliente.connect(PUERTO, HOST, () => {
     console.log('Conectado al servidor');
-    showMenu();
+    mostrarMenu();
 });
 
 // Manejar datos recibidos del servidor
-client.on('data', (data) => {
-    console.log('Respuesta del servidor: ' + data.toString());
-    showMenu();
+cliente.on('data', (datos) => {
+    console.log('Respuesta del servidor: ' + datos.toString());
+    mostrarMenu();
 });
 
 // Manejar errores
-client.on('error', (err) => {
-    console.error('Error: ' + err.message);
-    client.end();
+cliente.on('error', (error) => {
+    console.error('Error: ' + error.message);
+    cliente.end();
 });
 
 // Manejar cierre de conexión
-client.on('close', () => {
+cliente.on('close', () => {
     console.log('Conexión cerrada');
     rl.close();
 });
 
 // Mostrar menú y manejar opciones del usuario
-function showMenu() {
-    rl.question('Menú:\n1. Generar nombre de usuario\n2. Generar contraseña\n3. Salir\nElija una opción: ', (option) => {
-        if (option === '3') {
+function mostrarMenu() {
+    rl.question('Menú:\n1. Generar nombre de usuario\n2. Generar contraseña\n3. Salir\nElija una opción: ', (opcion) => {
+        if (opcion === '3') {
             console.log('Saliendo del programa...');
-            client.end();
+            cliente.end();
             return;
         }
 
-        if (option === '1' || option === '2') {
-            rl.question('Indique la longitud: ', (length) => {
-                length = parseInt(length, 10);
+        if (opcion === '1' || opcion === '2') {
+            rl.question('Indique la longitud: ', (longitud) => {
+                longitud = parseInt(longitud, 10);
 
-                if (isNaN(length) || length <= 0) {
+                if (isNaN(longitud) || longitud <= 0) {
                     console.log('Longitud inválida. Debe ser un número positivo.');
-                    showMenu();
+                    mostrarMenu();
                     return;
                 }
 
-                let request = '';
-                if (option === '1') {
-                    if (length < 5 || length > 15) {
+                let solicitud = '';
+                if (opcion === '1') {
+                    if (longitud < 5 || longitud > 15) {
                         console.log('Longitud inválida para nombre de usuario. Debe estar entre 5 y 15.');
-                        showMenu();
+                        mostrarMenu();
                         return;
                     }
-                    request = `U${length}`;
-                } else if (option === '2') {
-                    if (length < 8 || length >= 50) {
+                    solicitud = `U${longitud}`;
+                } else if (opcion === '2') {
+                    if (longitud < 8 || longitud >= 50) {
                         console.log('Longitud inválida para contraseña. Debe ser al menos 8 y menos de 50.');
-                        showMenu();
+                        mostrarMenu();
                         return;
                     }
-                    request = `P${length}`;
+                    solicitud = `P${longitud}`;
                 }
 
                 // Enviar solicitud al servidor
-                client.write(request);
+                cliente.write(solicitud);
             });
         } else {
             console.log('Opción no válida.');
-            showMenu();
+            mostrarMenu();
         }
     });
 }

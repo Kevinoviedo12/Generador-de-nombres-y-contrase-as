@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1724467116 source:d:\facultad\sistemas distribuidos\servidor\main.c
+1724470825 source:d:\facultad\sistemas distribuidos\servidor\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
