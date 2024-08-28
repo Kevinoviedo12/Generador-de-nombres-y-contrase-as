@@ -6,136 +6,136 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#define PORT 9090
-#define MAX_LEN 1024
+#define PUERTO 9090
+#define MAX_LONG 1024
 
-const char vowels[] = "aeiou";
-const char consonants[] = "bcdfghjklmnpqrstvwxyz";
+const char vocales[] = "aeiou";
+const char consonantes[] = "bcdfghjklmnpqrstvwxyz";
 
-// Función para generar un nombre de usuario alternando entre vocales y consonantes
-void generate_username(char* buffer, int length) {
-    int is_vowel = rand() % 2;
-    for (int i = 0; i < length; i++) {
-        if (is_vowel) {
-            buffer[i] = vowels[rand() % strlen(vowels)];
+// Hice la funcion para generar un nombre de usuario entre vocales y consonantes
+void generar_nombre_usuario(char* buffer, int longitud) {
+    int es_vocal = rand() % 2;
+    for (int i = 0; i < longitud; i++) {
+        if (es_vocal) {
+            buffer[i] = vocales[rand() % strlen(vocales)];
         } else {
-            buffer[i] = consonants[rand() % strlen(consonants)];
+            buffer[i] = consonantes[rand() % strlen(consonantes)];
         }
-        is_vowel = !is_vowel;
+        es_vocal = !es_vocal;
     }
-    buffer[length] = '\0';
+    buffer[longitud] = '\0';
 }
 
-// Función para generar una contraseña alfanumérica
-void generate_password(char* buffer, int length) {
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    for (int i = 0; i < length; i++) {
-        buffer[i] = charset[rand() % strlen(charset)];
+// Realizo la funcion generar una contraseña
+void generar_contrasena(char* buffer, int longitud) {
+    const char conjunto[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    for (int i = 0; i < longitud; i++) {
+        buffer[i] = conjunto[rand() % strlen(conjunto)];
     }
-    buffer[length] = '\0';
+    buffer[longitud] = '\0';
 }
 
 int main() {
     WSADATA wsa;
-    SOCKET server_fd, new_socket;
-    struct sockaddr_in address;
-    int addrlen = sizeof(address);
-    char buffer[MAX_LEN] = {0};
-    char response[MAX_LEN] = {0};
+    SOCKET servidor_fd, nuevo_socket;
+    struct sockaddr_in direccion;
+    int longitud_direccion = sizeof(direccion);
+    char buffer[MAX_LONG] = {0};
+    char respuesta[MAX_LONG] = {0};
 
     // Inicializar Winsock
     printf("Inicializando Winsock...\n");
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-        printf("Fallo en la inicializacion de Winsock. Codigo de error: %d\n", WSAGetLastError());
+        printf("Fallo en la inicialización de Winsock. Código de error: %d\n", WSAGetLastError());
         return 1;
     }
 
-    // Crear socket
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+    // Creo el socket
+    if ((servidor_fd = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
         printf("No se pudo crear el socket. Codigo de error: %d\n", WSAGetLastError());
         WSACleanup();
         return 1;
     }
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+    direccion.sin_family = AF_INET;
+    direccion.sin_addr.s_addr = INADDR_ANY;
+    direccion.sin_port = htons(PUERTO);
 
-    // Asociar el socket al puerto
-    if (bind(server_fd, (struct sockaddr*)&address, sizeof(address)) == SOCKET_ERROR) {
+    // Realizo el enlace entre el socket al puerto
+    if (bind(servidor_fd, (struct sockaddr*)&direccion, sizeof(direccion)) == SOCKET_ERROR) {
         printf("Error en bind. Codigo de error: %d\n", WSAGetLastError());
-        closesocket(server_fd);
+        closesocket(servidor_fd);
         WSACleanup();
         return 1;
     }
 
     // Escuchar conexiones
-    if (listen(server_fd, 3) == SOCKET_ERROR) {
-        printf("Error en listen. Codigo de error: %d\n", WSAGetLastError());
-        closesocket(server_fd);
+    if (listen(servidor_fd, 3) == SOCKET_ERROR) {
+        printf("Error en listen. Código de error: %d\n", WSAGetLastError());
+        closesocket(servidor_fd);
         WSACleanup();
         return 1;
     }
 
-    // Inicializar el generador de números aleatorios
+    // Inicializo el generador de números aleatorios
     srand((unsigned int)time(NULL));
 
     while (1) {
         printf("Esperando conexiones...\n");
-        if ((new_socket = accept(server_fd, (struct sockaddr*)&address, &addrlen)) == INVALID_SOCKET) {
-            printf("Error en accept. Codigo de error: %d\n", WSAGetLastError());
-            closesocket(server_fd);
+        if ((nuevo_socket = accept(servidor_fd, (struct sockaddr*)&direccion, &longitud_direccion)) == INVALID_SOCKET) {
+            printf("Error. Codigo de error: %d\n", WSAGetLastError());
+            closesocket(servidor_fd);
             WSACleanup();
             return 1;
         }
 
         while (1) {
-            // Recibir datos del cliente
-            int recv_len = recv(new_socket, buffer, MAX_LEN, 0);
-            if (recv_len > 0) {
-                buffer[recv_len] = '\0';
+            // Recibo los datos del cliente
+            int longitud_recibida = recv(nuevo_socket, buffer, MAX_LONG, 0);
+            if (longitud_recibida > 0) {
+                buffer[longitud_recibida] = '\0';
                 printf("Solicitud recibida: %s\n", buffer);
 
-                // Procesar la solicitud
-                int length = atoi(buffer + 1);
+                // Hago que se procese la solicitud
+                int longitud = atoi(buffer + 1);
                 if (buffer[0] == 'U') {  // Generar nombre de usuario
-                    if (length < 5 || length > 15) {
-                        strcpy(response, "Error: Longitud incorrecta para nombre de usuario.");
+                    if (longitud < 5 || longitud > 15) {
+                        strcpy(respuesta, "Error: Longitud incorrecta para nombre de usuario.");
                     } else {
-                        generate_username(response, length);
+                        generar_nombre_usuario(respuesta, longitud);
                     }
                 } else if (buffer[0] == 'P') {  // Generar contraseña
-                    if (length < 8 || length >= 50) {
-                        strcpy(response, "Error: Longitud incorrecta para contrasenia.");
+                    if (longitud < 8 || longitud >= 50) {
+                        strcpy(respuesta, "Error: Longitud incorrecta para contrasenia.");
                     } else {
-                        generate_password(response, length);
+                        generar_contrasena(respuesta, longitud);
                     }
                 } else {
-                    strcpy(response, "Error: Solicitud no valida.");
+                    strcpy(respuesta, "Error: Solicitud no valida.");
                 }
 
-                // Enviar respuesta al cliente
-                if (send(new_socket, response, strlen(response), 0) == SOCKET_ERROR) {
+                // Envio la respuesta al cliente
+                if (send(nuevo_socket, respuesta, strlen(respuesta), 0) == SOCKET_ERROR) {
                     printf("Error al enviar datos. Codigo de error: %d\n", WSAGetLastError());
                 } else {
-                    printf("Respuesta enviada: %s\n", response);
+                    printf("Respuesta enviada: %s\n", respuesta);
                 }
-            } else if (recv_len == 0) {
-                // Cliente cerrado la conexión
+            } else if (longitud_recibida == 0) {
+                // El cliente cierra la conexion
                 printf("El cliente ha cerrado la conexion.\n");
                 break;
             } else {
-                // Error en la recepción
+                // Error en la recepcion de datos
                 printf("Error al recibir datos. Codigo de error: %d\n", WSAGetLastError());
                 break;
             }
         }
 
-        // Cerrar el socket del cliente
-        closesocket(new_socket);
+        // cierro el socket del cliente
+        closesocket(nuevo_socket);
     }
 
-    closesocket(server_fd);
+    closesocket(servidor_fd);
     WSACleanup();
     return 0;
 }
